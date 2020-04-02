@@ -4,7 +4,7 @@ import cors from 'cors';
 import * as dotenv from 'dotenv';
 import logger from 'morgan';
 dotenv.config();
-import appRouter from './src/routers';
+import appRouter from './src/routes';
 
 
 

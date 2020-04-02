@@ -1,0 +1,32 @@
+type Transaction {
+  id: ID! @id
+  name: String!
+  table: Int!
+  clientName: String
+  zone: String
+  dateOpen: DateTime!
+  dateClose: DateTime!
+  waiter: Waiter! @relation(name: "WaiterByTransaction")
+  payments: [Payment!]! @relation(name: "PaymentsByTransaction", onDelete: CASCADE)
+  products: [Product!]! @relation(name: "ProductsByTransaction")
+}
+
+type Payment {
+  id: ID! @id
+  amount: Int!
+  type: String!
+  transaction: Transaction! @relation(name: "PaymentsByTransaction")
+}
+
+type Waiter {
+  id: ID! @id
+  name: String!
+}
+
+type Product {
+  id: ID! @id
+  name: String!
+  category: String!
+  price: Int!
+  quantity: Int!
+}

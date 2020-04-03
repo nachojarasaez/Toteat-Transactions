@@ -12,11 +12,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const MW = __importStar(require("../middleware/index"));
-const getAllWaiters_1 = __importDefault(require("./get/getAllWaiters"));
+const workerStadistics_1 = __importDefault(require("./get/workerStadistics"));
+const productStadistics_1 = __importDefault(require("./get/productStadistics"));
 const appRouter = express_1.Router();
 const utilMW = new MW.utilMiddleware();
 //Get Methods
-appRouter.get('/waiters', getAllWaiters_1.default);
+appRouter.get('/stadistics/worker', workerStadistics_1.default);
+appRouter.get('/stadistics/products', productStadistics_1.default);
 //Post Methods
 //Patch Methods
 exports.default = appRouter;

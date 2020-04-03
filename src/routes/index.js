@@ -17,7 +17,7 @@ const productStadistics_1 = __importDefault(require("./get/productStadistics"));
 const appRouter = express_1.Router();
 const utilMW = new MW.utilMiddleware();
 //Get Methods
-appRouter.get('/stadistics/worker', workerStadistics_1.default);
+appRouter.get('/stadistics/workers', workerStadistics_1.default);
 appRouter.get('/stadistics/products', productStadistics_1.default);
 //Post Methods
 //Patch Methods

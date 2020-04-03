@@ -10,7 +10,7 @@ const utilMW = new MW.utilMiddleware();
 
 
 //Get Methods
-appRouter.get('/stadistics/worker', workerStadistics)
+appRouter.get('/stadistics/workers', workerStadistics)
 appRouter.get('/stadistics/products', productStadistics)
 
 

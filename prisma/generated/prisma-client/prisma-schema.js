@@ -281,9 +281,10 @@ input PaymentWhereUniqueInput {
 type Product {
   id: ID!
   name: String!
-  category: String!
+  category: String
   price: Int!
   quantity: Int!
+  transaction: Transaction!
 }
 
 type ProductConnection {
@@ -295,14 +296,23 @@ type ProductConnection {
 input ProductCreateInput {
   id: ID
   name: String!
-  category: String!
+  category: String
   price: Int!
   quantity: Int!
+  transaction: TransactionCreateOneWithoutProductsInput!
 }
 
-input ProductCreateManyInput {
-  create: [ProductCreateInput!]
+input ProductCreateManyWithoutTransactionInput {
+  create: [ProductCreateWithoutTransactionInput!]
   connect: [ProductWhereUniqueInput!]
+}
+
+input ProductCreateWithoutTransactionInput {
+  id: ID
+  name: String!
+  category: String
+  price: Int!
+  quantity: Int!
 }
 
 type ProductEdge {
@@ -326,7 +336,7 @@ enum ProductOrderByInput {
 type ProductPreviousValues {
   id: ID!
   name: String!
-  category: String!
+  category: String
   price: Int!
   quantity: Int!
 }
@@ -413,18 +423,12 @@ input ProductSubscriptionWhereInput {
   NOT: [ProductSubscriptionWhereInput!]
 }
 
-input ProductUpdateDataInput {
-  name: String
-  category: String
-  price: Int
-  quantity: Int
-}
-
 input ProductUpdateInput {
   name: String
   category: String
   price: Int
   quantity: Int
+  transaction: TransactionUpdateOneRequiredWithoutProductsInput
 }
 
 input ProductUpdateManyDataInput {
@@ -434,18 +438,6 @@ input ProductUpdateManyDataInput {
   quantity: Int
 }
 
-input ProductUpdateManyInput {
-  create: [ProductCreateInput!]
-  update: [ProductUpdateWithWhereUniqueNestedInput!]
-  upsert: [ProductUpsertWithWhereUniqueNestedInput!]
-  delete: [ProductWhereUniqueInput!]
-  connect: [ProductWhereUniqueInput!]
-  set: [ProductWhereUniqueInput!]
-  disconnect: [ProductWhereUniqueInput!]
-  deleteMany: [ProductScalarWhereInput!]
-  updateMany: [ProductUpdateManyWithWhereNestedInput!]
-}
-
 input ProductUpdateManyMutationInput {
   name: String
   category: String
@@ -453,20 +445,39 @@ input ProductUpdateManyMutationInput {
   quantity: Int
 }
 
+input ProductUpdateManyWithoutTransactionInput {
+  create: [ProductCreateWithoutTransactionInput!]
+  delete: [ProductWhereUniqueInput!]
+  connect: [ProductWhereUniqueInput!]
+  set: [ProductWhereUniqueInput!]
+  disconnect: [ProductWhereUniqueInput!]
+  update: [ProductUpdateWithWhereUniqueWithoutTransactionInput!]
+  upsert: [ProductUpsertWithWhereUniqueWithoutTransactionInput!]
+  deleteMany: [ProductScalarWhereInput!]
+  updateMany: [ProductUpdateManyWithWhereNestedInput!]
+}
+
 input ProductUpdateManyWithWhereNestedInput {
   where: ProductScalarWhereInput!
   data: ProductUpdateManyDataInput!
 }
 
-input ProductUpdateWithWhereUniqueNestedInput {
-  where: ProductWhereUniqueInput!
-  data: ProductUpdateDataInput!
+input ProductUpdateWithoutTransactionDataInput {
+  name: String
+  category: String
+  price: Int
+  quantity: Int
 }
 
-input ProductUpsertWithWhereUniqueNestedInput {
+input ProductUpdateWithWhereUniqueWithoutTransactionInput {
   where: ProductWhereUniqueInput!
-  update: ProductUpdateDataInput!
-  create: ProductCreateInput!
+  data: ProductUpdateWithoutTransactionDataInput!
+}
+
+input ProductUpsertWithWhereUniqueWithoutTransactionInput {
+  where: ProductWhereUniqueInput!
+  update: ProductUpdateWithoutTransactionDataInput!
+  create: ProductCreateWithoutTransactionInput!
 }
 
 input ProductWhereInput {
@@ -528,6 +539,7 @@ input ProductWhereInput {
   quantity_lte: Int
   quantity_gt: Int
   quantity_gte: Int
+  transaction: TransactionWhereInput
   AND: [ProductWhereInput!]
   OR: [ProductWhereInput!]
   NOT: [ProductWhereInput!]
@@ -562,13 +574,13 @@ type Subscription {
 
 type Transaction {
   id: ID!
-  name: String!
   table: Int!
   clientName: String
   zone: String
   dateOpen: DateTime!
   dateClose: DateTime!
   waiter: Waiter!
+  total: Int
   payments(where: PaymentWhereInput, orderBy: PaymentOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Payment!]
   products(where: ProductWhereInput, orderBy: ProductOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Product!]
 }
@@ -581,15 +593,15 @@ type TransactionConnection {
 
 input TransactionCreateInput {
   id: ID
-  name: String!
   table: Int!
   clientName: String
   zone: String
   dateOpen: DateTime!
   dateClose: DateTime!
   waiter: WaiterCreateOneInput!
+  total: Int
   payments: PaymentCreateManyWithoutTransactionInput
-  products: ProductCreateManyInput
+  products: ProductCreateManyWithoutTransactionInput
 }
 
 input TransactionCreateOneWithoutPaymentsInput {
@@ -597,16 +609,33 @@ input TransactionCreateOneWithoutPaymentsInput {
   connect: TransactionWhereUniqueInput
 }
 
+input TransactionCreateOneWithoutProductsInput {
+  create: TransactionCreateWithoutProductsInput
+  connect: TransactionWhereUniqueInput
+}
+
 input TransactionCreateWithoutPaymentsInput {
   id: ID
-  name: String!
   table: Int!
   clientName: String
   zone: String
   dateOpen: DateTime!
   dateClose: DateTime!
   waiter: WaiterCreateOneInput!
-  products: ProductCreateManyInput
+  total: Int
+  products: ProductCreateManyWithoutTransactionInput
+}
+
+input TransactionCreateWithoutProductsInput {
+  id: ID
+  table: Int!
+  clientName: String
+  zone: String
+  dateOpen: DateTime!
+  dateClose: DateTime!
+  waiter: WaiterCreateOneInput!
+  total: Int
+  payments: PaymentCreateManyWithoutTransactionInput
 }
 
 type TransactionEdge {
@@ -617,8 +646,6 @@ type TransactionEdge {
 enum TransactionOrderByInput {
   id_ASC
   id_DESC
-  name_ASC
-  name_DESC
   table_ASC
   table_DESC
   clientName_ASC
@@ -629,16 +656,18 @@ enum TransactionOrderByInput {
   dateOpen_DESC
   dateClose_ASC
   dateClose_DESC
+  total_ASC
+  total_DESC
 }
 
 type TransactionPreviousValues {
   id: ID!
-  name: String!
   table: Int!
   clientName: String
   zone: String
   dateOpen: DateTime!
   dateClose: DateTime!
+  total: Int
 }
 
 type TransactionSubscriptionPayload {
@@ -660,24 +689,24 @@ input TransactionSubscriptionWhereInput {
 }
 
 input TransactionUpdateInput {
-  name: String
   table: Int
   clientName: String
   zone: String
   dateOpen: DateTime
   dateClose: DateTime
   waiter: WaiterUpdateOneRequiredInput
+  total: Int
   payments: PaymentUpdateManyWithoutTransactionInput
-  products: ProductUpdateManyInput
+  products: ProductUpdateManyWithoutTransactionInput
 }
 
 input TransactionUpdateManyMutationInput {
-  name: String
   table: Int
   clientName: String
   zone: String
   dateOpen: DateTime
   dateClose: DateTime
+  total: Int
 }
 
 input TransactionUpdateOneRequiredWithoutPaymentsInput {
@@ -687,20 +716,43 @@ input TransactionUpdateOneRequiredWithoutPaymentsInput {
   connect: TransactionWhereUniqueInput
 }
 
+input TransactionUpdateOneRequiredWithoutProductsInput {
+  create: TransactionCreateWithoutProductsInput
+  update: TransactionUpdateWithoutProductsDataInput
+  upsert: TransactionUpsertWithoutProductsInput
+  connect: TransactionWhereUniqueInput
+}
+
 input TransactionUpdateWithoutPaymentsDataInput {
-  name: String
   table: Int
   clientName: String
   zone: String
   dateOpen: DateTime
   dateClose: DateTime
   waiter: WaiterUpdateOneRequiredInput
-  products: ProductUpdateManyInput
+  total: Int
+  products: ProductUpdateManyWithoutTransactionInput
+}
+
+input TransactionUpdateWithoutProductsDataInput {
+  table: Int
+  clientName: String
+  zone: String
+  dateOpen: DateTime
+  dateClose: DateTime
+  waiter: WaiterUpdateOneRequiredInput
+  total: Int
+  payments: PaymentUpdateManyWithoutTransactionInput
 }
 
 input TransactionUpsertWithoutPaymentsInput {
   update: TransactionUpdateWithoutPaymentsDataInput!
   create: TransactionCreateWithoutPaymentsInput!
+}
+
+input TransactionUpsertWithoutProductsInput {
+  update: TransactionUpdateWithoutProductsDataInput!
+  create: TransactionCreateWithoutProductsInput!
 }
 
 input TransactionWhereInput {
@@ -718,20 +770,6 @@ input TransactionWhereInput {
   id_not_starts_with: ID
   id_ends_with: ID
   id_not_ends_with: ID
-  name: String
-  name_not: String
-  name_in: [String!]
-  name_not_in: [String!]
-  name_lt: String
-  name_lte: String
-  name_gt: String
-  name_gte: String
-  name_contains: String
-  name_not_contains: String
-  name_starts_with: String
-  name_not_starts_with: String
-  name_ends_with: String
-  name_not_ends_with: String
   table: Int
   table_not: Int
   table_in: [Int!]
@@ -785,6 +823,14 @@ input TransactionWhereInput {
   dateClose_gt: DateTime
   dateClose_gte: DateTime
   waiter: WaiterWhereInput
+  total: Int
+  total_not: Int
+  total_in: [Int!]
+  total_not_in: [Int!]
+  total_lt: Int
+  total_lte: Int
+  total_gt: Int
+  total_gte: Int
   payments_every: PaymentWhereInput
   payments_some: PaymentWhereInput
   payments_none: PaymentWhereInput

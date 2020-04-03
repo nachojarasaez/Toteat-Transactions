@@ -8,7 +8,7 @@ import appRouter from './src/routes';
 
 
 
-const { PORT = 4400} = process.env;
+const { PORT = 4440} = process.env;
 
 const allowControlOrigin = (req: any, res: any, next: any): void => {
   res.header("Access-Control-Allow-Origin", "*");

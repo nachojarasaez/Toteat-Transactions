@@ -245,8 +245,6 @@ export type ProductOrderByInput =
 export type TransactionOrderByInput =
   | "id_ASC"
   | "id_DESC"
-  | "name_ASC"
-  | "name_DESC"
   | "table_ASC"
   | "table_DESC"
   | "clientName_ASC"
@@ -256,7 +254,9 @@ export type TransactionOrderByInput =
   | "dateOpen_ASC"
   | "dateOpen_DESC"
   | "dateClose_ASC"
-  | "dateClose_DESC";
+  | "dateClose_DESC"
+  | "total_ASC"
+  | "total_DESC";
 
 export type WaiterOrderByInput =
   | "id_ASC"
@@ -328,20 +328,6 @@ export interface TransactionWhereInput {
   id_not_starts_with?: Maybe<ID_Input>;
   id_ends_with?: Maybe<ID_Input>;
   id_not_ends_with?: Maybe<ID_Input>;
-  name?: Maybe<String>;
-  name_not?: Maybe<String>;
-  name_in?: Maybe<String[] | String>;
-  name_not_in?: Maybe<String[] | String>;
-  name_lt?: Maybe<String>;
-  name_lte?: Maybe<String>;
-  name_gt?: Maybe<String>;
-  name_gte?: Maybe<String>;
-  name_contains?: Maybe<String>;
-  name_not_contains?: Maybe<String>;
-  name_starts_with?: Maybe<String>;
-  name_not_starts_with?: Maybe<String>;
-  name_ends_with?: Maybe<String>;
-  name_not_ends_with?: Maybe<String>;
   table?: Maybe<Int>;
   table_not?: Maybe<Int>;
   table_in?: Maybe<Int[] | Int>;
@@ -395,6 +381,14 @@ export interface TransactionWhereInput {
   dateClose_gt?: Maybe<DateTimeInput>;
   dateClose_gte?: Maybe<DateTimeInput>;
   waiter?: Maybe<WaiterWhereInput>;
+  total?: Maybe<Int>;
+  total_not?: Maybe<Int>;
+  total_in?: Maybe<Int[] | Int>;
+  total_not_in?: Maybe<Int[] | Int>;
+  total_lt?: Maybe<Int>;
+  total_lte?: Maybe<Int>;
+  total_gt?: Maybe<Int>;
+  total_gte?: Maybe<Int>;
   payments_every?: Maybe<PaymentWhereInput>;
   payments_some?: Maybe<PaymentWhereInput>;
   payments_none?: Maybe<PaymentWhereInput>;
@@ -499,6 +493,7 @@ export interface ProductWhereInput {
   quantity_lte?: Maybe<Int>;
   quantity_gt?: Maybe<Int>;
   quantity_gte?: Maybe<Int>;
+  transaction?: Maybe<TransactionWhereInput>;
   AND?: Maybe<ProductWhereInput[] | ProductWhereInput>;
   OR?: Maybe<ProductWhereInput[] | ProductWhereInput>;
   NOT?: Maybe<ProductWhereInput[] | ProductWhereInput>;
@@ -530,14 +525,14 @@ export interface TransactionCreateOneWithoutPaymentsInput {
 
 export interface TransactionCreateWithoutPaymentsInput {
   id?: Maybe<ID_Input>;
-  name: String;
   table: Int;
   clientName?: Maybe<String>;
   zone?: Maybe<String>;
   dateOpen: DateTimeInput;
   dateClose: DateTimeInput;
   waiter: WaiterCreateOneInput;
-  products?: Maybe<ProductCreateManyInput>;
+  total?: Maybe<Int>;
+  products?: Maybe<ProductCreateManyWithoutTransactionInput>;
 }
 
 export interface WaiterCreateOneInput {
@@ -550,15 +545,18 @@ export interface WaiterCreateInput {
   name: String;
 }
 
-export interface ProductCreateManyInput {
-  create?: Maybe<ProductCreateInput[] | ProductCreateInput>;
+export interface ProductCreateManyWithoutTransactionInput {
+  create?: Maybe<
+    | ProductCreateWithoutTransactionInput[]
+    | ProductCreateWithoutTransactionInput
+  >;
   connect?: Maybe<ProductWhereUniqueInput[] | ProductWhereUniqueInput>;
 }
 
-export interface ProductCreateInput {
+export interface ProductCreateWithoutTransactionInput {
   id?: Maybe<ID_Input>;
   name: String;
-  category: String;
+  category?: Maybe<String>;
   price: Int;
   quantity: Int;
 }
@@ -577,14 +575,14 @@ export interface TransactionUpdateOneRequiredWithoutPaymentsInput {
 }
 
 export interface TransactionUpdateWithoutPaymentsDataInput {
-  name?: Maybe<String>;
   table?: Maybe<Int>;
   clientName?: Maybe<String>;
   zone?: Maybe<String>;
   dateOpen?: Maybe<DateTimeInput>;
   dateClose?: Maybe<DateTimeInput>;
   waiter?: Maybe<WaiterUpdateOneRequiredInput>;
-  products?: Maybe<ProductUpdateManyInput>;
+  total?: Maybe<Int>;
+  products?: Maybe<ProductUpdateManyWithoutTransactionInput>;
 }
 
 export interface WaiterUpdateOneRequiredInput {
@@ -603,20 +601,23 @@ export interface WaiterUpsertNestedInput {
   create: WaiterCreateInput;
 }
 
-export interface ProductUpdateManyInput {
-  create?: Maybe<ProductCreateInput[] | ProductCreateInput>;
-  update?: Maybe<
-    | ProductUpdateWithWhereUniqueNestedInput[]
-    | ProductUpdateWithWhereUniqueNestedInput
-  >;
-  upsert?: Maybe<
-    | ProductUpsertWithWhereUniqueNestedInput[]
-    | ProductUpsertWithWhereUniqueNestedInput
+export interface ProductUpdateManyWithoutTransactionInput {
+  create?: Maybe<
+    | ProductCreateWithoutTransactionInput[]
+    | ProductCreateWithoutTransactionInput
   >;
   delete?: Maybe<ProductWhereUniqueInput[] | ProductWhereUniqueInput>;
   connect?: Maybe<ProductWhereUniqueInput[] | ProductWhereUniqueInput>;
   set?: Maybe<ProductWhereUniqueInput[] | ProductWhereUniqueInput>;
   disconnect?: Maybe<ProductWhereUniqueInput[] | ProductWhereUniqueInput>;
+  update?: Maybe<
+    | ProductUpdateWithWhereUniqueWithoutTransactionInput[]
+    | ProductUpdateWithWhereUniqueWithoutTransactionInput
+  >;
+  upsert?: Maybe<
+    | ProductUpsertWithWhereUniqueWithoutTransactionInput[]
+    | ProductUpsertWithWhereUniqueWithoutTransactionInput
+  >;
   deleteMany?: Maybe<ProductScalarWhereInput[] | ProductScalarWhereInput>;
   updateMany?: Maybe<
     | ProductUpdateManyWithWhereNestedInput[]
@@ -624,22 +625,22 @@ export interface ProductUpdateManyInput {
   >;
 }
 
-export interface ProductUpdateWithWhereUniqueNestedInput {
+export interface ProductUpdateWithWhereUniqueWithoutTransactionInput {
   where: ProductWhereUniqueInput;
-  data: ProductUpdateDataInput;
+  data: ProductUpdateWithoutTransactionDataInput;
 }
 
-export interface ProductUpdateDataInput {
+export interface ProductUpdateWithoutTransactionDataInput {
   name?: Maybe<String>;
   category?: Maybe<String>;
   price?: Maybe<Int>;
   quantity?: Maybe<Int>;
 }
 
-export interface ProductUpsertWithWhereUniqueNestedInput {
+export interface ProductUpsertWithWhereUniqueWithoutTransactionInput {
   where: ProductWhereUniqueInput;
-  update: ProductUpdateDataInput;
-  create: ProductCreateInput;
+  update: ProductUpdateWithoutTransactionDataInput;
+  create: ProductCreateWithoutTransactionInput;
 }
 
 export interface ProductScalarWhereInput {
@@ -728,31 +729,30 @@ export interface PaymentUpdateManyMutationInput {
   type?: Maybe<String>;
 }
 
-export interface ProductUpdateInput {
-  name?: Maybe<String>;
-  category?: Maybe<String>;
-  price?: Maybe<Int>;
-  quantity?: Maybe<Int>;
-}
-
-export interface ProductUpdateManyMutationInput {
-  name?: Maybe<String>;
-  category?: Maybe<String>;
-  price?: Maybe<Int>;
-  quantity?: Maybe<Int>;
-}
-
-export interface TransactionCreateInput {
+export interface ProductCreateInput {
   id?: Maybe<ID_Input>;
   name: String;
+  category?: Maybe<String>;
+  price: Int;
+  quantity: Int;
+  transaction: TransactionCreateOneWithoutProductsInput;
+}
+
+export interface TransactionCreateOneWithoutProductsInput {
+  create?: Maybe<TransactionCreateWithoutProductsInput>;
+  connect?: Maybe<TransactionWhereUniqueInput>;
+}
+
+export interface TransactionCreateWithoutProductsInput {
+  id?: Maybe<ID_Input>;
   table: Int;
   clientName?: Maybe<String>;
   zone?: Maybe<String>;
   dateOpen: DateTimeInput;
   dateClose: DateTimeInput;
   waiter: WaiterCreateOneInput;
+  total?: Maybe<Int>;
   payments?: Maybe<PaymentCreateManyWithoutTransactionInput>;
-  products?: Maybe<ProductCreateManyInput>;
 }
 
 export interface PaymentCreateManyWithoutTransactionInput {
@@ -769,16 +769,30 @@ export interface PaymentCreateWithoutTransactionInput {
   type: String;
 }
 
-export interface TransactionUpdateInput {
+export interface ProductUpdateInput {
   name?: Maybe<String>;
+  category?: Maybe<String>;
+  price?: Maybe<Int>;
+  quantity?: Maybe<Int>;
+  transaction?: Maybe<TransactionUpdateOneRequiredWithoutProductsInput>;
+}
+
+export interface TransactionUpdateOneRequiredWithoutProductsInput {
+  create?: Maybe<TransactionCreateWithoutProductsInput>;
+  update?: Maybe<TransactionUpdateWithoutProductsDataInput>;
+  upsert?: Maybe<TransactionUpsertWithoutProductsInput>;
+  connect?: Maybe<TransactionWhereUniqueInput>;
+}
+
+export interface TransactionUpdateWithoutProductsDataInput {
   table?: Maybe<Int>;
   clientName?: Maybe<String>;
   zone?: Maybe<String>;
   dateOpen?: Maybe<DateTimeInput>;
   dateClose?: Maybe<DateTimeInput>;
   waiter?: Maybe<WaiterUpdateOneRequiredInput>;
+  total?: Maybe<Int>;
   payments?: Maybe<PaymentUpdateManyWithoutTransactionInput>;
-  products?: Maybe<ProductUpdateManyInput>;
 }
 
 export interface PaymentUpdateManyWithoutTransactionInput {
@@ -873,13 +887,50 @@ export interface PaymentUpdateManyDataInput {
   type?: Maybe<String>;
 }
 
-export interface TransactionUpdateManyMutationInput {
+export interface TransactionUpsertWithoutProductsInput {
+  update: TransactionUpdateWithoutProductsDataInput;
+  create: TransactionCreateWithoutProductsInput;
+}
+
+export interface ProductUpdateManyMutationInput {
   name?: Maybe<String>;
+  category?: Maybe<String>;
+  price?: Maybe<Int>;
+  quantity?: Maybe<Int>;
+}
+
+export interface TransactionCreateInput {
+  id?: Maybe<ID_Input>;
+  table: Int;
+  clientName?: Maybe<String>;
+  zone?: Maybe<String>;
+  dateOpen: DateTimeInput;
+  dateClose: DateTimeInput;
+  waiter: WaiterCreateOneInput;
+  total?: Maybe<Int>;
+  payments?: Maybe<PaymentCreateManyWithoutTransactionInput>;
+  products?: Maybe<ProductCreateManyWithoutTransactionInput>;
+}
+
+export interface TransactionUpdateInput {
   table?: Maybe<Int>;
   clientName?: Maybe<String>;
   zone?: Maybe<String>;
   dateOpen?: Maybe<DateTimeInput>;
   dateClose?: Maybe<DateTimeInput>;
+  waiter?: Maybe<WaiterUpdateOneRequiredInput>;
+  total?: Maybe<Int>;
+  payments?: Maybe<PaymentUpdateManyWithoutTransactionInput>;
+  products?: Maybe<ProductUpdateManyWithoutTransactionInput>;
+}
+
+export interface TransactionUpdateManyMutationInput {
+  table?: Maybe<Int>;
+  clientName?: Maybe<String>;
+  zone?: Maybe<String>;
+  dateOpen?: Maybe<DateTimeInput>;
+  dateClose?: Maybe<DateTimeInput>;
+  total?: Maybe<Int>;
 }
 
 export interface WaiterUpdateInput {
@@ -977,23 +1028,23 @@ export interface PaymentNullablePromise
 
 export interface Transaction {
   id: ID_Output;
-  name: String;
   table: Int;
   clientName?: String;
   zone?: String;
   dateOpen: DateTimeOutput;
   dateClose: DateTimeOutput;
+  total?: Int;
 }
 
 export interface TransactionPromise extends Promise<Transaction>, Fragmentable {
   id: () => Promise<ID_Output>;
-  name: () => Promise<String>;
   table: () => Promise<Int>;
   clientName: () => Promise<String>;
   zone: () => Promise<String>;
   dateOpen: () => Promise<DateTimeOutput>;
   dateClose: () => Promise<DateTimeOutput>;
   waiter: <T = WaiterPromise>() => T;
+  total: () => Promise<Int>;
   payments: <T = FragmentableArray<Payment>>(args?: {
     where?: PaymentWhereInput;
     orderBy?: PaymentOrderByInput;
@@ -1018,13 +1069,13 @@ export interface TransactionSubscription
   extends Promise<AsyncIterator<Transaction>>,
     Fragmentable {
   id: () => Promise<AsyncIterator<ID_Output>>;
-  name: () => Promise<AsyncIterator<String>>;
   table: () => Promise<AsyncIterator<Int>>;
   clientName: () => Promise<AsyncIterator<String>>;
   zone: () => Promise<AsyncIterator<String>>;
   dateOpen: () => Promise<AsyncIterator<DateTimeOutput>>;
   dateClose: () => Promise<AsyncIterator<DateTimeOutput>>;
   waiter: <T = WaiterSubscription>() => T;
+  total: () => Promise<AsyncIterator<Int>>;
   payments: <T = Promise<AsyncIterator<PaymentSubscription>>>(args?: {
     where?: PaymentWhereInput;
     orderBy?: PaymentOrderByInput;
@@ -1049,13 +1100,13 @@ export interface TransactionNullablePromise
   extends Promise<Transaction | null>,
     Fragmentable {
   id: () => Promise<ID_Output>;
-  name: () => Promise<String>;
   table: () => Promise<Int>;
   clientName: () => Promise<String>;
   zone: () => Promise<String>;
   dateOpen: () => Promise<DateTimeOutput>;
   dateClose: () => Promise<DateTimeOutput>;
   waiter: <T = WaiterPromise>() => T;
+  total: () => Promise<Int>;
   payments: <T = FragmentableArray<Payment>>(args?: {
     where?: PaymentWhereInput;
     orderBy?: PaymentOrderByInput;
@@ -1103,7 +1154,7 @@ export interface WaiterNullablePromise
 export interface Product {
   id: ID_Output;
   name: String;
-  category: String;
+  category?: String;
   price: Int;
   quantity: Int;
 }
@@ -1114,6 +1165,7 @@ export interface ProductPromise extends Promise<Product>, Fragmentable {
   category: () => Promise<String>;
   price: () => Promise<Int>;
   quantity: () => Promise<Int>;
+  transaction: <T = TransactionPromise>() => T;
 }
 
 export interface ProductSubscription
@@ -1124,6 +1176,7 @@ export interface ProductSubscription
   category: () => Promise<AsyncIterator<String>>;
   price: () => Promise<AsyncIterator<Int>>;
   quantity: () => Promise<AsyncIterator<Int>>;
+  transaction: <T = TransactionSubscription>() => T;
 }
 
 export interface ProductNullablePromise
@@ -1134,6 +1187,7 @@ export interface ProductNullablePromise
   category: () => Promise<String>;
   price: () => Promise<Int>;
   quantity: () => Promise<Int>;
+  transaction: <T = TransactionPromise>() => T;
 }
 
 export interface PaymentConnection {
@@ -1468,7 +1522,7 @@ export interface ProductSubscriptionPayloadSubscription
 export interface ProductPreviousValues {
   id: ID_Output;
   name: String;
-  category: String;
+  category?: String;
   price: Int;
   quantity: Int;
 }
@@ -1520,36 +1574,36 @@ export interface TransactionSubscriptionPayloadSubscription
 
 export interface TransactionPreviousValues {
   id: ID_Output;
-  name: String;
   table: Int;
   clientName?: String;
   zone?: String;
   dateOpen: DateTimeOutput;
   dateClose: DateTimeOutput;
+  total?: Int;
 }
 
 export interface TransactionPreviousValuesPromise
   extends Promise<TransactionPreviousValues>,
     Fragmentable {
   id: () => Promise<ID_Output>;
-  name: () => Promise<String>;
   table: () => Promise<Int>;
   clientName: () => Promise<String>;
   zone: () => Promise<String>;
   dateOpen: () => Promise<DateTimeOutput>;
   dateClose: () => Promise<DateTimeOutput>;
+  total: () => Promise<Int>;
 }
 
 export interface TransactionPreviousValuesSubscription
   extends Promise<AsyncIterator<TransactionPreviousValues>>,
     Fragmentable {
   id: () => Promise<AsyncIterator<ID_Output>>;
-  name: () => Promise<AsyncIterator<String>>;
   table: () => Promise<AsyncIterator<Int>>;
   clientName: () => Promise<AsyncIterator<String>>;
   zone: () => Promise<AsyncIterator<String>>;
   dateOpen: () => Promise<AsyncIterator<DateTimeOutput>>;
   dateClose: () => Promise<AsyncIterator<DateTimeOutput>>;
+  total: () => Promise<AsyncIterator<Int>>;
 }
 
 export interface WaiterSubscriptionPayload {

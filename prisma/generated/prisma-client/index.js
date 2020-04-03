@@ -32,7 +32,8 @@ exports.models = [
 exports.Prisma = prisma_client_lib_1.makePrismaClientClass({
     typeDefs: prisma_schema_1.typeDefs,
     models: exports.models,
-    endpoint: `https://market-register-dc41b92ae0.herokuapp.com/Entrevista-Toteat/dev`
+    endpoint: `${process.env["PRISMA_ENDPOINT"]}`,
+    secret: `${process.env["PRISMA_SECRET"]}`
 });
 exports.prisma = new exports.Prisma();
 //# sourceMappingURL=index.js.map

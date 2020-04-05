@@ -33,7 +33,6 @@ const workerStadistics = async (req, res) => {
             }
         }
         `);
-        console.log(transactions);
         var productDate;
         for (let trans of transactions) {
             productDate = new Date(trans['dateOpen']);

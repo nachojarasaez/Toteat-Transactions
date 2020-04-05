@@ -14,11 +14,13 @@ const express_1 = require("express");
 const MW = __importStar(require("../middleware/index"));
 const workerStadistics_1 = __importDefault(require("./get/workerStadistics"));
 const productStadistics_1 = __importDefault(require("./get/productStadistics"));
+const generalStadistics_1 = __importDefault(require("./get/generalStadistics"));
 const appRouter = express_1.Router();
 const utilMW = new MW.utilMiddleware();
 //Get Methods
 appRouter.get('/stadistics/workers', workerStadistics_1.default);
 appRouter.get('/stadistics/products', productStadistics_1.default);
+appRouter.get('/stadistics/generals', generalStadistics_1.default);
 //Post Methods
 //Patch Methods
 exports.default = appRouter;

@@ -5,6 +5,8 @@ const productStadistics = async (req, res) => {
     try {
         var stadistic = { product: {}, category: {} };
         let { month, day } = req.query;
+        var initialDate;
+        var terminalDate;
         if (month) {
             if (day) {
                 initialDate = new Date(2019, parseInt(month) - 1, parseInt(day) - 1);
@@ -19,31 +21,37 @@ const productStadistics = async (req, res) => {
             initialDate = new Date(2019, 0, 1);
             terminalDate = new Date(2019 + 1, 0, 1);
         }
-        const transactions = await prisma_client_1.prisma.transactions().$fragment(`
-        fragment waiter on transaction{
-            id
-            clientName
-            total
-            dateOpen
-            products{
-              name
-              category
-              quantity
-              price
-            }
-
-        }
-        `);
-        var initialDate;
-        var terminalDate;
-        var productDate;
-        for (let trans of transactions) {
-            productDate = new Date(trans['dateOpen']);
-            if (initialDate.valueOf() < productDate.valueOf() && terminalDate.valueOf() > productDate.valueOf()) {
-                for (let product of trans.products) {
-                    product.name in stadistic.product ? stadistic.product[product.name]['quantity'] += 1 :
-                        stadistic.product[product.name] = { 'price': product.price, 'quantity': 1, 'category': product.category };
+        if (month) {
+            const transactions = await prisma_client_1.prisma.transactions().$fragment(`
+          fragment waiter on transaction{
+              id
+              clientName
+              total
+              dateOpen
+              products{
+                name
+                category
+                quantity
+                price
+              }
+  
+          }
+          `);
+            for (let trans of transactions) {
+                var productDate = new Date(trans['dateOpen']);
+                if (initialDate.valueOf() < productDate.valueOf() && terminalDate.valueOf() > productDate.valueOf()) {
+                    for (let product of trans.products) {
+                        product.name in stadistic.product ? stadistic.product[product.name]['quantity'] += 1 :
+                            stadistic.product[product.name] = { 'price': product.price, 'quantity': 1, 'category': product.category };
+                    }
                 }
+            }
+        }
+        else {
+            const products = await prisma_client_1.prisma.products();
+            for (let product of products) {
+                product.name in stadistic.product ? stadistic.product[product.name]['quantity'] += 1 :
+                    stadistic.product[product.name] = { 'price': product.price, 'quantity': 1, 'category': product.category };
             }
         }
         for (let prod in stadistic.product) {

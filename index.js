@@ -17,7 +17,7 @@ const dotenv = __importStar(require("dotenv"));
 const morgan_1 = __importDefault(require("morgan"));
 dotenv.config();
 const routes_1 = __importDefault(require("./src/routes"));
-const { PORT = 4440 } = process.env;
+const { PORT = 4444 } = process.env;
 const allowControlOrigin = (req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
     res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS');

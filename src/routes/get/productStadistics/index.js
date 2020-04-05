@@ -4,26 +4,20 @@ const prisma_client_1 = require("../../../../prisma/generated/prisma-client");
 const productStadistics = async (req, res) => {
     try {
         var stadistic = { product: {}, category: {} };
-        let { year, month, day } = req.query;
-        if (year) {
-            if (month) {
-                if (day) {
-                    initialDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day) - 1);
-                    terminalDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
-                }
-                else {
-                    initialDate = new Date(parseInt(year), parseInt(month) - 1, 1);
-                    terminalDate = new Date(parseInt(year), parseInt(month), 1);
-                }
+        let { month, day } = req.query;
+        if (month) {
+            if (day) {
+                initialDate = new Date(2019, parseInt(month) - 1, parseInt(day) - 1);
+                terminalDate = new Date(2019, parseInt(month) - 1, parseInt(day));
             }
             else {
-                initialDate = new Date(parseInt(year), 0, 1);
-                terminalDate = new Date(parseInt(year) + 1, 0, 1);
+                initialDate = new Date(2019, parseInt(month) - 1, 1);
+                terminalDate = new Date(2019, parseInt(month), 1);
             }
         }
         else {
             initialDate = new Date(2019, 0, 1);
-            terminalDate = new Date(2020, 4, 1);
+            terminalDate = new Date(2019 + 1, 0, 1);
         }
         const transactions = await prisma_client_1.prisma.transactions().$fragment(`
         fragment waiter on transaction{
@@ -46,7 +40,6 @@ const productStadistics = async (req, res) => {
         for (let trans of transactions) {
             productDate = new Date(trans['dateOpen']);
             if (initialDate.valueOf() < productDate.valueOf() && terminalDate.valueOf() > productDate.valueOf()) {
-                console.log(productDate);
                 for (let product of trans.products) {
                     product.name in stadistic.product ? stadistic.product[product.name]['quantity'] += 1 :
                         stadistic.product[product.name] = { 'price': product.price, 'quantity': 1, 'category': product.category };

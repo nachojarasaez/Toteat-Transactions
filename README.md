@@ -2,4 +2,5 @@
 
 To Run Local:
 
-python3 manage.py runserver   
+npm install
+npm start
